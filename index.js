@@ -1,6 +1,6 @@
 const inputDate=document.querySelector("#date-input");
 const checkButton=document.querySelector("#btn");
-const outputBox=document.querySelector("#output");
+const outputBox=document.querySelector("#output-line");
 
 function reverseStr(str){
     var listOfStr= str.split('');
@@ -14,7 +14,6 @@ function isPalindrome(str){
     return str === reverseStr(str);
 }
 
-console.log(isPalindrome("mom"))
 
 function convertDateToStr(date){
     var dateStr= {day:'',month:'',year:''}
@@ -57,19 +56,98 @@ function checkPalindromeForAllDateFormat(date){
     }
 }
 
-
-
-var date={
-    day:8,
-    month:2,
-    year:2080
+function IsLeapYear(year){
+    if(year % 400 ===0){
+        return true
+    }
+    if (year % 100 ===0){
+        return true
+    }
+    if(year%4 ===0){
+        return true
+    }
+    return false
 }
 
-console.log(checkPalindromeForAllDateFormat(date));
+
+function getTheNextDate(date){
+    var day=date.day+1;
+    var month=date.month;
+    var year=date.year;
+
+    var daysInMonth=[31,28,31,30,31,30,31,31,30,31,30,31];
+
+    if(month===2){
+       if(IsLeapYear(year)){
+        if(day>29){
+            day=1;
+            month++;
+        }
+       }else{
+        if(day>28){
+            day=1;
+            month++;
+        }
+       }
+    }
+    else{
+        if(day>daysInMonth[month-1]){
+            day=1;
+            month++
+        }
+    }
+
+    if(month>12){
+        month=1;
+        year++;
+    }
+
+    return {
+        day:day,
+        month:month,
+        year:year
+    };
+
+}
+
+function getNextPalindromeDate(date){
+    var ctr=0;
+    var nextDate=getTheNextDate(date);
+
+    while(1){
+        ctr++;
+        var isPalindrome=checkPalindromeForAllDateFormat(nextDate);
+        if(isPalindrome){
+            break;
+        }
+        nextDate=getTheNextDate(nextDate);
+    }
+
+    return [ctr , nextDate];
+}
 
 
+function clickHandler(){
+    var dateInput=inputDate.value;
 
+    if(dateInput !== ''){
+        var listOfDate=dateInput.split('-');
+        var date={
+            day:Number(listOfDate[2]),
+            month:Number(listOfDate[1]),
+            year:Number(listOfDate[0])
+        }
 
+        var isPalindrome=checkPalindromeForAllDateFormat(date);
 
+        if(isPalindrome){
+            outputBox.innerText="hey, your birthday is palindrome !!!!"
+        }else{
+            var [ctr , nextDate]=getNextPalindromeDate(date);
+            outputBox.innerText="the next date is  "
+        }
+    }
+   
+}
 
-// checkButton.addEventListener("click");
+checkButton.addEventListener("click",clickHandler);
